@@ -31,3 +31,10 @@ deno  run --allow-net  --allow-env  --allow-write kit.js
 ```
 
 You will get your data from `output.csv` file
+
+You can also compile and run it later:
+
+```
+deno compile --allow-net  --allow-env  --allow-write kit.js
+./kit
+```
