@@ -8,6 +8,7 @@ A kit for Github project board, that calculates some metric. Current supported:
 
 ## Prepare
 
+- Install [Deno](https://deno.land/#installation)
 - Milestone is required
 
 ## Run
