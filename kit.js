@@ -2,6 +2,8 @@ import { CsvFile } from "https://deno.land/x/csv_file/mod.ts";
 
 const DOING_COLUMN_NAME = "Doing";
 const DONE_COLUMN_NAME = "Done";
+const CODE_COMMIT_COLUMN_NAME = "PR ready";
+const DEPLOYED_COLUMN_NAME = "Analytics QA";
 
 const OUTPUT_FILE = Deno.args[0] || "output.csv";
 
@@ -70,12 +72,21 @@ const results = milestones.map((milestone) => {
     const doneAt = timelines.filter((timeline) =>
       timeline.projectColumnName === DONE_COLUMN_NAME
     ).pop().createdAt || "";
+    const commitedAt = timelines.filter((timeline) =>
+      timeline.projectColumnName === CODE_COMMIT_COLUMN_NAME
+    ).shift()?.createdAt || doingAt;
+    const deployedAt = timelines.filter((timeline) =>
+      timeline.projectColumnName === DEPLOYED_COLUMN_NAME
+    ).pop()?.createdAt || doneAt;
     return {
       title: issue.title,
       url: issue.url,
       doingAt,
       doneAt,
+      commitedAt,
+      deployedAt,
       cycleTime: `${daysBetween(doneAt, doingAt)}`,
+      leadTime: `${daysBetween(deployedAt, commitedAt)}`,
     };
   }).sort((a, b) => new Date(a.doneAt) - new Date(b.doneAt));
 
@@ -99,7 +110,10 @@ csv.writeRecordSync([
   "Url",
   "Doing At",
   "Done At",
+  "Commited At",
+  "Deployed At",
   "Circle Time (days)",
+  "Lead Time (days)",
   "Milestone",
 ]);
 
@@ -110,7 +124,10 @@ results.map((result) => {
       event.url,
       event.doingAt,
       event.doneAt,
+      event.commitedAt,
+      event.deployedAt,
       event.cycleTime,
+      event.leadTime,
       result.title,
     ]);
   });
