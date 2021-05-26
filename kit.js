@@ -89,7 +89,6 @@ console.log(JSON.stringify(results, null, 2));
 
 const csv = new CsvFile(
   await Deno.open(OUTPUT_FILE, {
-    read: true,
     write: true,
     create: true,
     truncate: true,
