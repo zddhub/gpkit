@@ -19,6 +19,11 @@ const sql = `
           nodes {
             title
             url
+            labels(first: 10) {
+              nodes {
+                name
+              }
+            }
             timelineItems(itemTypes: [MOVED_COLUMNS_IN_PROJECT_EVENT, ADDED_TO_PROJECT_EVENT], first: 100) {
               nodes {
                 __typename
@@ -46,6 +51,10 @@ const daysBetween = (endDate, startDate) => {
       (1000 * 60 * 60 * 24),
   );
 };
+
+const getPoints = (labels) =>  {
+  return labels.filter(label => label.name.match(/\d{1,2} Point*/)).map(label => parseInt(label.name.split())).reduce((a, b) => a + b, 0)
+}
 
 const response = await fetch(Deno.env.get("GRAPHQL_ENDPOINT"), {
   method: "POST",
@@ -78,6 +87,7 @@ const results = milestones.map((milestone) => {
     const deployedAt = timelines.filter((timeline) =>
       timeline.projectColumnName === DEPLOYED_COLUMN_NAME
     ).pop()?.createdAt || doneAt;
+    const labels = issue?.labels.nodes
     return {
       title: issue.title,
       url: issue.url,
@@ -87,6 +97,7 @@ const results = milestones.map((milestone) => {
       deployedAt,
       cycleTime: `${daysBetween(doneAt, doingAt)}`,
       leadTime: `${daysBetween(deployedAt, commitedAt)}`,
+      points: `${getPoints(labels || [])}`,
     };
   }).sort((a, b) => new Date(a.doneAt) - new Date(b.doneAt));
 
@@ -114,6 +125,7 @@ csv.writeRecordSync([
   "Deployed At",
   "Circle Time (days)",
   "Lead Time (days)",
+  "Points",
   "Milestone",
 ]);
 
@@ -128,6 +140,7 @@ results.map((result) => {
       event.deployedAt,
       event.cycleTime,
       event.leadTime,
+      event.points,
       result.title,
     ]);
   });
