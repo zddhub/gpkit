@@ -98,6 +98,7 @@ const results = milestones.map((milestone) => {
       cycleTime: `${daysBetween(doneAt, doingAt)}`,
       leadTime: `${daysBetween(deployedAt, commitedAt)}`,
       points: `${getPoints(labels || [])}`,
+      devTime: `${daysBetween(deployedAt, doingAt)}`,
     };
   }).sort((a, b) => new Date(a.doneAt) - new Date(b.doneAt));
 
@@ -127,6 +128,7 @@ csv.writeRecordSync([
   "Lead Time (days)",
   "Points",
   "Milestone",
+  "Dev Time (days)",
 ]);
 
 results.map((result) => {
@@ -140,6 +142,7 @@ results.map((result) => {
       event.deployedAt,
       event.cycleTime,
       event.leadTime,
+      event.devTime,
       event.points,
       result.title,
     ]);
