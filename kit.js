@@ -12,7 +12,7 @@ const sql = `
   repository(owner: "${Deno.env.get("GITHUB_OWNER")}", name: "${
   Deno.env.get("GITHUB_PROJECT_NAME")
 }") {
-    milestones(first: 20) {
+    milestones(last: 13) {
       nodes {
         title
         issues(last: 100, states: CLOSED) {
