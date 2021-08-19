@@ -142,9 +142,9 @@ results.map((result) => {
       event.deployedAt,
       event.cycleTime,
       event.leadTime,
-      event.devTime,
       event.points,
       result.title,
+      event.devTime,
     ]);
   });
 });
